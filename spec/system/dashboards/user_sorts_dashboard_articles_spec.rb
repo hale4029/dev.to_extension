@@ -1,0 +1,55 @@
+require "rails_helper"
+
+RSpec.describe "Sorting Dashboard Articles", type: :system, js: true do
+  let(:user) { create(:user) }
+  let(:article1) { create(:article, user_id: user.id, published_at: 10.minutes.ago, created_at: 1.day.ago, positive_reactions_count: 5, page_views_count: 0, comments_count: 100) }
+  let(:article2) { create(:article, user_id: user.id, published_at: 1.minute.ago, created_at: 2.days.ago, positive_reactions_count: 1, page_views_count: 10, comments_count: 0) }
+  let(:article3) { create(:article, user_id: user.id, published_at: 5.minutes.ago, created_at: 3.days.ago, positive_reactions_count: 0, page_views_count: 1000, comments_count: 50) }
+  let(:articles) { [article1, article2, article3] }
+
+  let(:article_with_comments_count_of) do
+    ->(target_count) { articles.detect { |article| article.comments_count == target_count } }
+  end
+
+  let(:test_article_order) do
+    lambda do |url, expected_article_array|
+      visit url
+      comments_counts_on_page = page.all(".single-article .comments-count span.value").map { |e| e.text.to_i }
+      articles_on_page = comments_counts_on_page.map do |count|
+        article_with_comments_count_of.call(count)
+      end
+      expect(articles_on_page).to eq(expected_article_array)
+    end
+  end
+
+  before do
+    article1
+    article2
+    article3
+    sign_in user
+  end
+
+  it "shows articles sorted by default in created_at DESC" do
+    test_article_order.call("/dashboard", [article1, article2, article3])
+  end
+
+  it "shows articles sorted by created_at ASC" do
+    test_article_order.call("/dashboard?sort=creation-asc", [article3, article2, article1])
+  end
+
+  it "shows articles sorted by comments_count DESC" do
+    test_article_order.call("/dashboard?sort=comments-desc", [article1, article3, article2])
+  end
+
+  it "shows articles sorted by page_views_count ASC" do
+    test_article_order.call("/dashboard?sort=views-asc", [article1, article2, article3])
+  end
+
+  it "shows articles sorted by positive_reactions_count ASC" do
+    test_article_order.call("/dashboard?sort=reactions-asc", [article3, article2, article1])
+  end
+
+  it "shows articles sorted by published_at DESC" do
+    test_article_order.call("/dashboard?sort=published-desc", [article2, article3, article1])
+  end
+end

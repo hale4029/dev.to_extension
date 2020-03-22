@@ -1,0 +1,86 @@
+<div class="row m-3">
+  <div class="col">
+    <ul class="nav nav-pills">
+      <li class="nav-item">
+        <a href="/internal/mods" class="nav-link <%= "active" if params[:state].blank? %>">General Community</a>
+      </li>
+      <li class="nav-item">
+        <a href="/internal/mods?state=tag" class="nav-link <%= "active" if params[:state] == "tag" %>">Tag Mods</a>
+      </li>
+      <li class="nav-item">
+        <a href="/internal/mods?state=potential" class="nav-link <%= "active" if params[:state] == "potential" %>">Potential Mods</a>
+      </li>
+    </ul>
+  </div>
+  <div class="col">
+    <%= form_tag("/internal/mods", method: "get") do %>
+      <div class="form-row justify-content-end">
+        <div class="form-group">
+          <%= text_field_tag(:search, params[:search]) %>
+          <% if params[:state].present? %>
+            <%= hidden_field_tag(:state, params[:state]) %>
+          <% end %>
+          <%= submit_tag("Search") %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<%= paginate @mods %>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Profile</th>
+      <th scope="col">Comments</th>
+      <th scope="col">Badges</th>
+      <th scope="col">Last Comment</th>
+      <% if params[:state] == "potential" %>
+        <th scope="col">Action</th>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+    <% @mods.each do |mod| %>
+    <tr>
+      <td><%= mod.id %></td>
+      <td><%= link_to mod.username, "/internal/users/#{mod.id}/" %></td>
+      <td><%= mod.comments_count %></td>
+      <td><%= mod.badge_achievements_count %></td>
+      <td><%= time_ago_in_words mod.last_comment_at %> ago</td>
+      <% if params[:state] == "potential" %>
+        <td>
+          <%= form_for([:internal, mod], url: "/internal/mods/#{mod.id}", method: :patch) do |f| %>
+            <%= f.submit "Make Trusted Mod" %>
+          <% end %>
+        </td>
+      <% end %>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= paginate @mods %>
+
+<script>
+function submitForms() {
+  var form = $(this);
+  var valuesToSubmit = $(this).serialize();
+  form.parents(".wrapper").addClass("submitting-no-border")
+  $.ajax({
+    type: "POST",
+    url: $(this).attr('action'), //sumbits it to the given url of the form
+    data: valuesToSubmit,
+    // dataType: "JSON" // you want a difference between normal and ajax-calls, and json is standard
+  }).success(function (json) {
+    console.log("success")
+    form.parents(".wrapper").addClass("highlighted-no-border")
+  });
+  return false; // prevents normal behaviour
+}
+
+$('.wrapper').on("submit", "form", submitForms)
+
+</script>

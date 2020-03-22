@@ -1,0 +1,105 @@
+<%= content_for :page_meta do %>
+  <% title_with_timeframe(
+       page_title: "#{ApplicationConfig['COMMUNITY_NAME']} Community  👩‍💻👨‍💻",
+       timeframe: params[:timeframe],
+       content_for: true,
+     ) %>
+
+  <link rel="canonical" href="https://dev.to<%= request.path %>" />
+  <meta name="description" content="Where programmers share ideas and help each other grow.">
+  <meta name="keywords" content="software development,engineering,rails,javascript,ruby">
+
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://dev.to<%= request.path %>" />
+  <meta property="og:title" content="<%= title_with_timeframe(page_title: community_qualified_name, timeframe: params[:timeframe]) %>" />
+  <meta property="og:image" content="<%= SiteConfig.main_social_image %>">
+  <meta property="og:description" content="Where programmers share ideas and help each other grow." />
+  <meta property="og:site_name" content="<%= community_qualified_name %>" />
+
+  <meta name="twitter:site" content="@<%= SiteConfig.social_networks_handle %>">
+  <meta name="twitter:title" content="<%= title_with_timeframe(page_title: community_qualified_name, timeframe: params[:timeframe]) %>">
+  <meta name="twitter:description" content="Where programmers share ideas, experiences, and help each other grow.">
+  <meta name="twitter:image:src" content="<%= SiteConfig.main_social_image %>">
+  <meta name="twitter:card" content="summary_large_image">
+  <%= auto_discovery_link_tag(:rss, "https://dev.to/feed", title: "#{ApplicationConfig['COMMUNITY_NAME']} RSS Feed") %>
+<% end %>
+<%= javascript_pack_tag "homePage", defer: true %>
+
+<% cache(cache_key_heroku_slug("main-stories-index-#{params}-#{user_signed_in?}"), expires_in: 90.seconds) do %>
+  <div class="home" id="index-container"
+      data-params="<%= params.to_json(only: %i[tag username q]) %>" data-which="<%= @list_of %>"
+      data-algolia-tag=""
+      data-feed="<%= params[:timeframe] || "base-feed" %>"
+      data-articles-since="<%= Timeframer.new(params[:timeframe]).datetime.to_i %>">
+
+    <%= render "articles/sidebar" %>
+
+    <%# BEGIN Feed menu bar %>
+    <div class="articles-list" id="articles-list">
+      <div class="on-page-nav-controls" id="on-page-nav-controls">
+        <div class="on-page-nav-label">
+          <div class="wide-nav-links">
+            <a class="nav-chronofiter-link <%= "selected" if %w[week month year infinity latest].exclude?(params[:timeframe]) %>" href="<%= list_path %>/">
+              FEED
+            </a>
+            <span class="separator"></span>
+            <a class="nav-chronofiter-link <%= "selected" if timeframe_check("week") %>" href="<%= list_path %>/top/week">
+              WEEK
+            </a>
+            <a class="nav-chronofiter-link <%= "selected" if timeframe_check("month") %>" href="<%= list_path %>/top/month">
+              MONTH
+            </a>
+            <a class="nav-chronofiter-link <%= "selected" if timeframe_check("year") %>" href="<%= list_path %>/top/year">
+              YEAR
+            </a>
+            <a class="nav-chronofiter-link <%= "selected" if timeframe_check("infinity") %>" href="<%= list_path %>/top/infinity">
+              INFINITY
+            </a>
+            <span class="separator"></span>
+            <a class="nav-chronofiter-link <%= "selected" if timeframe_check("latest") %>" href="<%= list_path %>/latest">
+              LATEST
+            </a>
+          </div>
+          <div class="narrow-nav-select" aria-label="feed-filter-select">
+            <% if ["week", "month", "year", "infinity", "latest"].exclude?(params[:timeframe]) %>
+              <button type="button" id="narrow-feed-butt">&lt;MY <%= ApplicationConfig["COMMUNITY_NAME"] %> FEED&gt;</button>
+            <% elsif timeframe_check('week') %>
+              <button type="button" id="narrow-feed-butt">&lt;PAST WEEK&gt;</button>
+            <% elsif timeframe_check('month') %>
+              <button type="button" id="narrow-feed-butt">&lt;PAST MONTH&gt;</button>
+            <% elsif timeframe_check('year') %>
+              <button type="button" id="narrow-feed-butt">&lt;PAST YEAR&gt;</button>
+            <% elsif timeframe_check('infinity') %>
+              <button type="button" id="narrow-feed-butt">&lt;INFINITY&gt;</button>
+            <% elsif timeframe_check('latest') %>
+              <button type="button" id="narrow-feed-butt">&lt;LATEST&gt;</button>
+            <% end %>
+          </div>
+        </div>
+        <button type="button" class="on-page-nav-butt on-page-nav-butt-left" id="on-page-nav-butt-left" aria-label="nav-button-left">
+          <img src="<%= asset_path "stack.svg" %>" alt="left-sidebar-nav">
+        </button>
+        <button type="button" class="on-page-nav-butt on-page-nav-butt-right" id="on-page-nav-butt-right" aria-label="nav-button-right">
+          <img src="<%= asset_path "lightning.svg" %>" alt="right-sidebar-nav">
+        </button>
+      </div>
+      <%# END Feed menu bar %>
+
+      <% if user_signed_in? %>
+        <div id="homepage-feed"></div>
+      <% else %>
+        <%= render "stories/main_stories_feed" %>
+      <% end %>
+
+      <div id="followed-podcasts" data-episodes="<%= @podcast_episodes.to_json(include: { podcast: { only: %i[slug title id], methods: %i[image_90] } }) %>"></div>
+      <div class="loading-articles" id="loading-articles">
+        loading...
+      </div>
+    </div>
+
+    <%= render "articles/sidebar_additional" %>
+  </div>
+
+  <%= render "stories/narrow_nav_menu" %>
+  <%= render "stories/stories_list_script" %>
+<% end %>

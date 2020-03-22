@@ -1,0 +1,46 @@
+<% title "DEV Connect 👩‍💻💬👨‍💻" %>
+<%= content_for :page_meta do %>
+  <link rel="canonical" href="https://dev.to/connect" />
+  <meta name="description" content="DEV Connect">
+<% end %>
+<%= csrf_meta_tags %>
+
+<% if user_signed_in? %>
+  <%= javascript_pack_tag "Chat", defer: true %>
+  <div class="chat-page-wrapper">
+    <div
+      id="chat"
+      class="live-chat"
+      data-pusher-key="<%= ApplicationConfig["PUSHER_KEY"] %>"
+      data-github-token="<%= @github_token %>"
+      data-chat-channels="<%= [] %>"
+      data-chat-options="<%= { showChannelsList: true, showTimestamp: true, activeChannelId: @active_channel&.id, currentUserId: current_user.id }.to_json %>">
+      <div class="chat" id="chat_placeholder">
+        <div class="chat__channels chat__channels--expanded chat__channels--placeholder">
+          <button class="chat__channelstogglebutt" onClick={this.toggleExpand}>&lt;</button>
+          <button class="chat__channelstogglebutt chat__channelstogglebutt--placeholderunexpanded">&gt;</button>
+          <input placeholder='Filter' onKeyUp={this.debouncedChannelFilter} />
+        </div>
+        <div class="chat__activechat">
+          <div class="activechatchannel">
+            <div class="activechatchannel__conversation">
+              <div class="activechatchannel__header"><span>&nbsp;</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% else %>
+  <%= render "devise/registrations/registration_form" %>
+<% end %>
+<style>
+  footer {
+    display: none
+  }
+</style>
+<script>
+  if (navigator.userAgent.match(/iPhone/i) && !navigator.userAgent.match('CriOS')) {
+    document.getElementById("chat").classList.add("live-chat--iossafari")
+  }
+</script>
