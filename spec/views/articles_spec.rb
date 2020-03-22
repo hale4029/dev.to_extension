@@ -10,7 +10,7 @@ RSpec.describe "articles/show", type: :view do
     assign(:article, article1.decorate)
     assign(:comment, Comment.new)
     without_partial_double_verification do
-      allow(view).to receive(:internal_navigation?).and_return(params[:i] == "i")
+        allow(view).to receive(:internal_navigation?).and_return(params[:i] == "i")
     end
   end
 

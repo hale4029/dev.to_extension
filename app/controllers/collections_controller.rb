@@ -1,7 +1,8 @@
 class CollectionsController < ApplicationController
   def index
-    # require "pry"; binding.pry
-    # @resources = Collection.all.paginate(10, params[:page])
+    #@resources = Collection.all.paginate(10, params[:page])
+    @resources = Collection.where(user_id: session_current_user_id)
+    #require "pry"; binding.pry
   end
 
   # Define a custom finder by overriding the `find_resource` method:

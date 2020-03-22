@@ -1,17 +1,18 @@
 require "rails_helper"
 
 RSpec.describe "Collection", type: :feature do
-  describe "visit collections page" do
-    before do
-      user = create(:user)
-      # article = create(:article, user_id: user.id)
-      create(:collection, :with_articles, user: user)
-      # allow_any_instance_of(ApplicationController).to receive(:authenticate_user!).and_return(user)
-    end
 
+  before :each do
+    @user = create(:user)
+    # article = create(:article, user_id: user.id)
+    @collection = create(:collection, :with_articles, user: @user)
+    allow_any_instance_of(SessionCurrentUser).to receive(:session_current_user_id).and_return(@user.id)
+  end
+
+  describe "visit collections page" do
     it "returns colection page" do
       visit "/collections"
-      expect(page).to have_content("Collections Page")
+      expect(page).to have_content("Collections")
     end
   end
 
