@@ -1,4 +1,4 @@
-<% title "Collections" %>
+<% title "Collection Articles" %>
 
 <%= content_for :page_meta do %>
   <link rel="canonical" href="https://dev.to/readinglist" />
@@ -19,12 +19,12 @@
 
 <%# container for page%>
 <div class="home">
-  <h1>Collections</h1>
-
-  <% @resources.each do |collection| %>
-    <a class='item' href="/collections/<%= collection.id %>">
+  <h1><%= @collection.title %></h1>
+  
+  <% @collection.articles.each do |article| %>
+    <a class='item' href="/<%= article.slug %>">
       <div class="item-title">
-        <%= collection.title  %>
+        <%= article.title  %>
       </div>
     </a>
   <% end %>

@@ -14,6 +14,13 @@ RSpec.describe "Collection", type: :feature do
       visit "/collections"
       expect(page).to have_content("Collections")
     end
+
+    it "visit collection show page" do
+      visit "/collections"
+      click_on "#{@collection.title}"
+      expect(current_path).to eq("/collections/#{@collection.id}")
+      expect(page).to have_content("#{@collection.title}")
+    end
   end
 
   #   describe "PUT reading_list_items/:id" do

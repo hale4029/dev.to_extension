@@ -1,6 +1,7 @@
 FactoryBot.define do
   factory :collection do
     description { Faker::Hipster.words(number: 4).join(", ") }
+    title { Faker::Hipster.words(number: 4).join(", ") }
     user
     sequence(:slug) { |n| "slug-#{n}" }
   end
