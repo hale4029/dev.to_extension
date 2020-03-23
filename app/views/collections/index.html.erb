@@ -21,10 +21,10 @@
 <div class="home">
   <h1>Collections</h1>
 
-  <% @resources.each do |collection| %>
+  <% @collections.each do |collection| %>
     <a class='item' href="/collections/<%= collection.id %>">
       <div class="item-title">
-        <%= collection.title  %>
+        <%= collection.name  %>
       </div>
     </a>
   <% end %>

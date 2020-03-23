@@ -19,10 +19,10 @@
 
 <%# container for page%>
 <div class="home">
-  <h1><%= @collection.title %></h1>
-  
+  <h1><%= @collection.name %></h1>
+
   <% @collection.articles.each do |article| %>
-    <a class='item' href="/<%= article.slug %>">
+    <a class='item' href=" <%= article.path %> ">
       <div class="item-title">
         <%= article.title  %>
       </div>
