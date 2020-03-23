@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_27_214321) do
+ActiveRecord::Schema.define(version: 2020_03_23_003706) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -147,6 +147,15 @@ ActiveRecord::Schema.define(version: 2020_02_27_214321) do
     t.index ["published_at"], name: "index_articles_on_published_at"
     t.index ["slug"], name: "index_articles_on_slug"
     t.index ["user_id"], name: "index_articles_on_user_id"
+  end
+
+  create_table "artisanal_collections", force: :cascade do |t|
+    t.bigint "article_id"
+    t.bigint "container_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["article_id"], name: "index_artisanal_collections_on_article_id"
+    t.index ["container_id"], name: "index_artisanal_collections_on_container_id"
   end
 
   create_table "audit_logs", force: :cascade do |t|
@@ -334,6 +343,13 @@ ActiveRecord::Schema.define(version: 2020_02_27_214321) do
     t.index ["created_at"], name: "index_comments_on_created_at"
     t.index ["score"], name: "index_comments_on_score"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "containers", force: :cascade do |t|
+    t.string "description"
+    t.string "name"
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_containers_on_user_id"
   end
 
   create_table "credits", force: :cascade do |t|
@@ -1098,7 +1114,7 @@ ActiveRecord::Schema.define(version: 2020_02_27_214321) do
     t.datetime "last_article_at", default: "2017-01-01 05:00:00"
     t.datetime "last_comment_at", default: "2017-01-01 05:00:00"
     t.datetime "last_followed_at"
-    t.datetime "last_moderation_notification", default: "2017-01-01 05:00:00"
+    t.datetime "last_moderation_notification", default: "2017-01-01 07:00:00"
     t.datetime "last_notification_activity"
     t.string "last_onboarding_page"
     t.datetime "last_sign_in_at"
@@ -1209,12 +1225,15 @@ ActiveRecord::Schema.define(version: 2020_02_27_214321) do
   end
 
   add_foreign_key "api_secrets", "users", on_delete: :cascade
+  add_foreign_key "artisanal_collections", "articles"
+  add_foreign_key "artisanal_collections", "containers"
   add_foreign_key "audit_logs", "users"
   add_foreign_key "badge_achievements", "badges"
   add_foreign_key "badge_achievements", "users"
   add_foreign_key "chat_channel_memberships", "chat_channels"
   add_foreign_key "chat_channel_memberships", "users"
   add_foreign_key "classified_listings", "users", on_delete: :cascade
+  add_foreign_key "containers", "users"
   add_foreign_key "identities", "users", on_delete: :cascade
   add_foreign_key "messages", "chat_channels"
   add_foreign_key "messages", "users"
@@ -1225,6 +1244,7 @@ ActiveRecord::Schema.define(version: 2020_02_27_214321) do
   add_foreign_key "oauth_access_tokens", "users", column: "resource_owner_id"
   add_foreign_key "page_views", "articles", on_delete: :cascade
   add_foreign_key "podcasts", "users", column: "creator_id"
+  add_foreign_key "pro_memberships", "users"
   add_foreign_key "sponsorships", "organizations"
   add_foreign_key "sponsorships", "users"
   add_foreign_key "tag_adjustments", "articles", on_delete: :cascade
