@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {
   TagList,
   SaveButton,
+  AddButton,
   ReadingTime,
   ReactionsCount,
   CommentsCount,
@@ -91,6 +92,11 @@ export const FeaturedArticle = ({
           readingTime={article.reading_time}
         />
         <SaveButton
+          article={article}
+          isBookmarked={isBookmarked}
+          onClick={bookmarkClick}
+        />
+        <AddButton
           article={article}
           isBookmarked={isBookmarked}
           onClick={bookmarkClick}

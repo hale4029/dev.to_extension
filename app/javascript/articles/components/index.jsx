@@ -4,6 +4,7 @@ export * from './OrganizationHeadline';
 export * from './PublishDate';
 export * from './ReactionsCount';
 export * from './SaveButton';
+export * from './AddButton';
 export * from './SearchSnippet';
 export * from './ReadingTime';
 export * from './TagList';

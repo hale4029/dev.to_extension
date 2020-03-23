@@ -87,6 +87,18 @@ function buildArticleHTML(article) {
                        &nbsp;\
                     </button>'
     }
+    var addButton = '';
+    if (article.class_name === "Article") {
+      addButton = '<button type="button" class="article-engagement-count engage-button_2 collection-button" data-reactable-id="'+article.id+'">\
+                      <span class="collection-initial">+</span>\
+                      <span class="collection-success">-</span>\
+                    </button>'
+    } else if (article.class_name === "User") {
+      addButton = '<button type="button" style="width: 122px" class="article-engagement-count engage-button_2 follow-action-button"\
+                       data-info=\'{"id":'+article.id+',"className":"User"}\' data-follow-action-button>\
+                       &nbsp;\
+                    </button>'
+    }
 
     var publishDate = '';
     if (article.readable_publish_date) {
@@ -130,6 +142,7 @@ function buildArticleHTML(article) {
        <h4><a href="/'+article.user.username+'">'+filterXSS(article.user.name)+publishDate+timeAgoInWords+'</a></h4>\
        <div class="tags">'+tagString+'</div>\
        '+commentsCountHTML+reactionsCountHTML+readingTimeHTML+'\
-       '+saveButton+'</div>';
+       '+saveButton+'\
+       '+addButton+'</div>';
   }
 }

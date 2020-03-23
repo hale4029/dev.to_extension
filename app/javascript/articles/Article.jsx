@@ -8,6 +8,7 @@ import {
   PublishDate,
   ReadingTime,
   SaveButton,
+  AddButton,
   SearchSnippet,
   TagList,
   ReactionsCount,
@@ -118,6 +119,11 @@ export const Article = ({
         />
       )}
       <SaveButton
+        article={article}
+        isBookmarked={isBookmarked}
+        onClick={bookmarkClick}
+      />
+      <AddButton
         article={article}
         isBookmarked={isBookmarked}
         onClick={bookmarkClick}
